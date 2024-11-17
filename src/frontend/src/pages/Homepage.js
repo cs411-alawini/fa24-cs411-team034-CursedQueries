@@ -1,31 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 
-function Homepage({ setFilters }) {
-  const [courseCode, setCourseCode] = useState("");
-  const [subject, setSubject] = useState("");
-
-  const handleSearch = () => {
-    setFilters({ courseCode, subject });
-  };
-
+const Homepage = ({ members }) => {
   return (
     <div>
-      <h1>Study Group Finder</h1>
-      <input
-        type="text"
-        placeholder="Course Code"
-        value={courseCode}
-        onChange={(e) => setCourseCode(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Subject"
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
+      <h1>Homepage</h1>
+      <p>Search bar placeholder here.</p>
+
+      <h2>Available Members:</h2>
+      {members.length > 0 ? (
+        <ul>
+          {members.map((member, index) => (
+            <li key={index}>{member}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>Loading members...</p>
+      )}
     </div>
   );
-}
+};
 
 export default Homepage;
