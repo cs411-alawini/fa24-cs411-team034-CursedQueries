@@ -5,14 +5,14 @@ const Homepage = ({ groups }) => {
   // State to store filter values
   const [courseCode, setCourseCode] = useState('');
   const [subject, setSubject] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [meetingTime, setMeetingTime] = useState(''); // State for meeting time filter
 
-  // Filter groups based on search term, course code, and subject
+  // Filter groups based on course code, subject, and meeting time
   const filteredGroups = groups.filter(group => {
     return (
       group.courseCode.toLowerCase().includes(courseCode.toLowerCase()) &&
       group.subject.toLowerCase().includes(subject.toLowerCase()) &&
-      (group.name.toLowerCase().includes(searchTerm.toLowerCase()) || group.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      group.meetingTime.toLowerCase().includes(meetingTime.toLowerCase()) // Meeting time filter
     );
   });
 
@@ -21,7 +21,7 @@ const Homepage = ({ groups }) => {
       <h1>Welcome to the Study Group Platform</h1>
       <p>Find study groups and join a community of learners!</p>
 
-      {/* Filters for course code, subject, and search term */}
+      {/* Filters for course code, subject, and meeting time */}
       <div className="search-bar">
         {/* Course Code Filter */}
         <input
@@ -39,12 +39,12 @@ const Homepage = ({ groups }) => {
           onChange={(e) => setSubject(e.target.value)}
         />
 
-        {/* Search Term Filter */}
+        {/* Meeting Time Filter */}
         <input
           type="text"
-          placeholder="Search by Study Group Name or Description"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Filter by Meeting Time"
+          value={meetingTime}
+          onChange={(e) => setMeetingTime(e.target.value)}
         />
       </div>
 
