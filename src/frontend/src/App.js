@@ -1,45 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
+import './App.css'; 
+
 import Homepage from "./pages/Homepage";
-import GroupListings from "./pages/GroupListings";
-import GroupDashboard from "./pages/GroupDashboard";
-import GroupCreation from "./pages/GroupCreation";
 import Profile from "./pages/Profile";
 
+// test data
+const groups = [
+  {
+    name: "Math 101 Study Group",
+    description: "A group for students taking Math 101.",
+    courseCode: "MATH101",
+    subject: "Mathematics",
+    groupSize: 5,
+    meetingTime: "Monday 5 PM"
+  },
+  {
+    name: "CS 101 Study Group",
+    description: "Group for CS 101 assignments and exam prep.",
+    courseCode: "CS101",
+    subject: "Computer Science",
+    groupSize: 4,
+    meetingTime: "Tuesday 3 PM"
+  },
+  {
+    name: "History 101 Study Group",
+    description: "History 101 group discussions.",
+    courseCode: "HIST101",
+    subject: "History",
+    groupSize: 3,
+    meetingTime: "Wednesday 10 AM"
+  }
+];
+
 const App = () => {
-  const [members, setMembers] = useState([]);
-
-  // fetch from flask backend
-  useEffect(() => {
-    fetch("http://127.0.0.1:5000/members")
-      .then((response) => response.json())
-      .then((data) => {
-        setMembers(data.members);
-      })
-      .catch((error) => console.error("Error fetching members:", error));
-  }, []);
-
   return (
-    <Router>
-      <div>
-        <nav>
-          <Link to="/">Homepage</Link>
-          <Link to="/listings">Group Listings</Link>
-          <Link to="/dashboard">Group Dashboard</Link>
-          <Link to="/create">Create Group</Link>
-          <Link to="/profile">Profile</Link>
-        </nav>
-
-        <Routes>
-          <Route path="/" element={<Homepage members={members} />} />
-          <Route path="/listings" element={<GroupListings />} />
-          <Route path="/dashboard" element={<GroupDashboard />} />
-          <Route path="/create" element={<GroupCreation />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      <Homepage groups={groups} />
+    </div>
   );
 };
 

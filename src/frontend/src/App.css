@@ -1,0 +1,73 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+  }
+  
+  /* Homepage Styles */
+  .homepage {
+    text-align: center;
+    padding: 50px 0;
+  }
+  
+  .homepage h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  
+  .homepage p {
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .homepage ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .homepage li {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .homepage li:before {
+    content: "• ";
+    color: #2980b9; /* Blue bullet */
+  }
+  
+  /* Search Bar Styles */
+  .search-bar {
+    margin: 20px 0;
+  }
+  
+  .search-bar input {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .search-bar button {
+    padding: 10px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 16px;
+  }
+  
+  .search-bar button:hover {
+    background-color: #3498db;
+  }
+  
