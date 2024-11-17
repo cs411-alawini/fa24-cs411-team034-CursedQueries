@@ -3,6 +3,12 @@ import mysql.connector
 
 app = Flask(__name__)
 
+'''
+Project Setup: 
+    1) Create a python venv. Activate it and pip install requirements.txt.
+    2) Run server.py, then run npx App.py.
+'''
+
 # Members API Route
 @app.route("/")
 def index():
