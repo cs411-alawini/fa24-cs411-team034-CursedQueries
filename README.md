@@ -1,8 +1,23 @@
-# team034-CursedQueries
-Notes: Make sure that your title follows the convention: [TeamID]-[YourTeamName]. The TeamID should have a three digit coding (in this case 034). Make sure that your url for this repository is [fa23-cs411-team000-teamname.git]. Link to Repo: [Link](https://github.com/jeffwong19/fa24-cs411-team034-CursedQueries.git). After setting up the project, submit your team formation to the team form.
+# Quick Start 
 
-## Permission
-TODO: Allow TAs to access your repository. Add TA(s) as a collaborator to the repository.
+### Note: The below commands are intended for Windows.
 
-## Preparing for your release
-Eash submission should be in it's own [release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases). Release are specific freezes to your repository. You should submit your commit hash on canvas or google sheet. When tagging your stage, please use the tag `stage.x` where x is the number to represent the stage.
+1) REQUIRED: Make sure Python3 and node.js are installed. If running locally, you need to implement the Studygroup database in mysql.
+   
+2) Open a terminal instance in the Project. Go to use the below commands in src/backend.
+   This creates, activates, and installs the required packages in a virtual environment.
+    ``` 
+    python -m venv venv
+    .\venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
+
+3) Start up the backend using the below command. If running locally, open http://localhost:5000 in your browser.
+    ``` 
+    python server.py
+    ```
+   
+4) To start up the frontend, open another terminal instance in the Project. Use the below command in src/frontend. If running locally, open http://localhost:3000 in your browser.
+    ``` 
+    npm start
+    ```
