@@ -1,20 +1,31 @@
 import React, { useState } from 'react';
 import '../App.css'; // Ensure CSS is linked correctly
+import Axios from 'axios'
 
-const Homepage = ({ groups }) => {
+const Homepage = () => {
   // State to store filter values
+  const [groups, setGroups] = useState('');
   const [courseCode, setCourseCode] = useState('');
   const [subject, setSubject] = useState('');
   const [meetingTime, setMeetingTime] = useState(''); // State for meeting time filter
 
-  // Filter groups based on course code, subject, and meeting time
-  const filteredGroups = groups.filter(group => {
-    return (
-      group.courseCode.toLowerCase().includes(courseCode.toLowerCase()) &&
-      group.subject.toLowerCase().includes(subject.toLowerCase()) &&
-      group.meetingTime.toLowerCase().includes(meetingTime.toLowerCase()) // Meeting time filter
-    );
-  });
+  // Data to pass through backend request
+  const data = {
+    course_code: courseCode,
+    department: subject,
+    meeting_time: meetingTime
+  };
+
+  // Every time an input changes, filter out the groups
+  const filterGroups = () => {
+    Axios.get('http://localhost:5000/api/homepage', {
+      params: data
+    }).then(response => {
+      setGroups(response.data);
+    }).catch(error => {
+      console.error(error);
+    });
+  };
 
   return (
     <div className="homepage">
@@ -46,18 +57,21 @@ const Homepage = ({ groups }) => {
           value={meetingTime}
           onChange={(e) => setMeetingTime(e.target.value)}
         />
+        <button onClick={filterGroups}>
+          Search
+        </button>
       </div>
 
       {/* Display filtered groups */}
       <h2>Available Study Groups:</h2>
-      {filteredGroups.length > 0 ? (
+      {groups.length > 0 ? (
         <ul>
-          {filteredGroups.map((group, index) => (
+          {groups.map((group, index) => (
             <li key={index}>
-              <h3>{group.name}</h3>
-              <p>{group.description}</p>
-              <p>Course Code: {group.courseCode}</p>
-              <p>Subject: {group.subject}</p>
+              <h3>{group.group_name}</h3>
+              <p>Study Type: {group.study_type}</p>
+              <p>Course Name: {group.course_name}</p>
+              <p>CRN: {group.CRN}</p>
               <p>Group Size: {group.groupSize}</p>
               <p>Meeting Time: {group.meetingTime}</p>
             </li>
