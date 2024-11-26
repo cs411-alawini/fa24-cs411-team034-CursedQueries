@@ -14,8 +14,16 @@ export default function Profile() {
   const [dropdownOption, setDropdownOption] = useState("");
   const [contactInfo, setContactInfo] = useState('');
   const [userContacts, setuserContacts] = useState('');
+  const [loginMessage, setLoginMessage] = useState('');
 
-  
+  const handleLogin = () => {
+    if (profile === profile_database && password === password_database) {
+      setLoginMessage("Login successful!");
+    } else {
+      setLoginMessage("Invalid email or password.");
+    }
+  };
+
   // Add Contact - Update button handler
   const updateProfile = () => {
     setProfile_database(profile);
@@ -51,8 +59,32 @@ export default function Profile() {
 
   return (
     <div className = "homepage" >
-      <h1>Profile</h1> <hr/><br/>
+     {/* ============================ LOGIN ============================ */}
+     <h1>Login</h1>
+      <label htmlFor="emailLogin"> Email/ID: </label>
+      <input
+        id="emailLogin"
+        type="text"
+        placeholder="Enter your email"
+        value={profile}
+        onChange={(e) => setProfile(e.target.value)}
+      /> <br /><br />
+
+      <label htmlFor="passwordLogin"> Password: </label>
+      <input
+        id="passwordLogin"
+        type="password"
+        placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      /> <br /><br />
+
+    <button onClick={handleLogin} style={{marginBottom: 40}}>Login</button>
+
+      <p>{loginMessage}</p>
       
+      <hr /><br />
+      <h1>Profile</h1> <hr/><br/>
       {/* ============================ EDIT PROFILE ============================ */}
       <h2>Edit Profile</h2><br/>
       
