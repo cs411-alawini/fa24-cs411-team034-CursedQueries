@@ -71,3 +71,17 @@
     background-color: #3498db;
   }
   
+  .search-page {
+    text-align: center; /* Centers all text horizontally */
+    padding: 50px 0; /* Adds vertical padding to center content visually */
+  }
+  
+  .search-page h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  
+  .search-page p {
+    font-size: 18px;
+    color: #555;
+  }

@@ -1,0 +1,87 @@
+.time-widget {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%; /* Reduced width for smaller size */
+    max-width: 800px; /* Restrict maximum size */
+    margin: auto; /* Center the widget */
+    text-align: center;
+  }
+  
+  .time-widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .time-widget-header h3 {
+    margin: 0;
+  }
+  
+  .close-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .close-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .time-widget-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for 7 days */
+    gap: 10px; /* Space between columns */
+    margin: 20px 0;
+  }
+  
+  .day-column {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .day-column h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .time-slots {
+    display: flex;
+    flex-direction: column; /* Stack time slots vertically */
+    align-items: center;
+  }
+  
+  .time-slot {
+    font-size: 14px;
+    margin: 5px 0; /* Space between each checkbox */
+  }
+  
+  .time-slot input {
+    margin-right: 5px; /* Space between checkbox and label */
+  }
+  
+  .clear-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .clear-button:hover {
+    background-color: #0056b3;
+  }
+  
