@@ -14,6 +14,9 @@ export default function Profile() {
   const [dropdownOption, setDropdownOption] = useState("");
   const [contactInfo, setContactInfo] = useState('');
   const [userContacts, setuserContacts] = useState('');
+
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
 
   const handleLogin = () => {
@@ -60,14 +63,14 @@ export default function Profile() {
   return (
     <div className = "homepage" >
      {/* ============================ LOGIN ============================ */}
-     <h1>Login</h1>
-      <label htmlFor="emailLogin"> Email/ID: </label>
+      <h1>Login</h1>
+      <label htmlFor="emailLogin"> Email: </label>
       <input
         id="emailLogin"
         type="text"
         placeholder="Enter your email"
-        value={profile}
-        onChange={(e) => setProfile(e.target.value)}
+        value={loginEmail}
+        onChange={(e) => setLoginEmail(e.target.value)}
       /> <br /><br />
 
       <label htmlFor="passwordLogin"> Password: </label>
@@ -75,12 +78,16 @@ export default function Profile() {
         id="passwordLogin"
         type="password"
         placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        value={loginPassword}
+        onChange={(e) => setLoginPassword(e.target.value)}
       /> <br /><br />
 
-    <button onClick={handleLogin} style={{marginBottom: 40}}>Login</button>
-
+      <button 
+        onClick={handleLogin} 
+        style={{ marginBottom: "40px"}}
+      >
+        Login
+      </button>
       <p>{loginMessage}</p>
       
       <hr /><br />
