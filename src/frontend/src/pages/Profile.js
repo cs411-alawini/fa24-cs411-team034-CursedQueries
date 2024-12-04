@@ -19,6 +19,11 @@ export default function Profile() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
 
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerMessage, setRegisterMessage] = useState('');
+
+
   const handleLogin = () => {
     if (profile === profile_database && password === password_database) {
       setLoginMessage("Login successful!");
@@ -26,6 +31,16 @@ export default function Profile() {
       setLoginMessage("Invalid email or password.");
     }
   };
+  const handleRegister = async () => {
+    try {
+      // Simulate API call or integrate your API logic here
+      console.log(`Registering with: ${registerEmail}, ${registerPassword}`);
+      setRegisterMessage('Account created successfully!');
+    } catch (error) {
+      setRegisterMessage('Error creating account. Please try again.');
+    }
+  };
+  
 
   // Add Contact - Update button handler
   const updateProfile = () => {
@@ -91,6 +106,34 @@ export default function Profile() {
       <p>{loginMessage}</p>
       
       <hr /><br />
+      {/* ============================ CREATE ACCOUNT ============================ */}
+<h1>Create Account</h1>
+<label htmlFor="emailRegister"> Email: </label>
+<input
+  id="emailRegister"
+  type="text"
+  placeholder="Enter your email"
+  value={registerEmail}
+  onChange={(e) => setRegisterEmail(e.target.value)}
+/> <br /><br />
+
+<label htmlFor="passwordRegister"> Password: </label>
+<input
+  id="passwordRegister"
+  type="password"
+  placeholder="Enter your password"
+  value={registerPassword}
+  onChange={(e) => setRegisterPassword(e.target.value)}
+/> <br /><br />
+
+<button 
+  onClick={handleRegister} 
+  style={{ marginBottom: "40px"}}
+>
+  Create Account
+</button>
+<p>{registerMessage}</p>
+
       <h1>Profile</h1> <hr/><br/>
       {/* ============================ EDIT PROFILE ============================ */}
       <h2>Edit Profile</h2><br/>
