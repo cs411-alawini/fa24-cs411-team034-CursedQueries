@@ -3,83 +3,94 @@ import '../App.css'; // Ensure CSS is linked correctly
 import Axios from 'axios'
 
 const Homepage = () => {
-  // State to store filter values
-  const [groups, setGroups] = useState('');
-  const [courseCode, setCourseCode] = useState('');
-  const [subject, setSubject] = useState('');
-  const [meetingTime, setMeetingTime] = useState(''); // State for meeting time filter
+  // States for Login
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginMessage, setLoginMessage] = useState('');
 
-  // Data to pass through backend request
-  const data = {
-    course_code: courseCode,
-    department: subject,
-    meeting_time: meetingTime
+  // States for Create Account
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerMessage, setRegisterMessage] = useState('');
+
+  // Handle Login
+  const handleLogin = () => {
+    // Replace with actual API call
+    if (loginEmail === 'test@example.com' && loginPassword === 'password') {
+      setLoginMessage('Login successful!');
+    } else {
+      setLoginMessage('Invalid email or password.');
+    }
   };
 
-  // Every time an input changes, filter out the groups
-  const filterGroups = () => {
-    Axios.get('http://localhost:5000/api/homepage', {
-      params: data
-    }).then(response => {
-      setGroups(response.data);
-    }).catch(error => {
-      console.error(error);
-    });
+  // Handle Registration
+  const handleRegister = async () => {
+    try {
+      // Replace with actual API call
+      console.log(`Registering: ${registerEmail}, ${registerPassword}`);
+      setRegisterMessage('Account created successfully!');
+    } catch (error) {
+      setRegisterMessage('Error creating account. Please try again.');
+    }
   };
 
   return (
     <div className="homepage">
-      <h1>Welcome to the Study Group Platform</h1>
-      <p>Find study groups and join a community of learners!</p>
+      {/* Login Section */}
+      <h1>Login</h1>
+      <label htmlFor="emailLogin"> Email: </label>
+      <input
+        id="emailLogin"
+        type="text"
+        placeholder="Enter your email"
+        value={loginEmail}
+        onChange={(e) => setLoginEmail(e.target.value)}
+      />
+      <br />
+      <br />
+      <label htmlFor="passwordLogin"> Password: </label>
+      <input
+        id="passwordLogin"
+        type="password"
+        placeholder="Enter your password"
+        value={loginPassword}
+        onChange={(e) => setLoginPassword(e.target.value)}
+      />
+      <br />
+      <br />
+      <button onClick={handleLogin} style={{ marginBottom: '40px' }}>
+        Login
+      </button>
+      <p>{loginMessage}</p>
+      <hr />
+      <br />
 
-      {/* Filters for course code, subject, and meeting time */}
-      <div className="search-bar">
-        {/* Course Code Filter */}
-        <input
-          type="text"
-          placeholder="Filter by Course Code"
-          value={courseCode}
-          onChange={(e) => setCourseCode(e.target.value)}
-        />
-
-        {/* Subject Filter */}
-        <input
-          type="text"
-          placeholder="Filter by Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
-
-        {/* Meeting Time Filter */}
-        <input
-          type="text"
-          placeholder="Filter by Meeting Time"
-          value={meetingTime}
-          onChange={(e) => setMeetingTime(e.target.value)}
-        />
-        <button onClick={filterGroups}>
-          Search
-        </button>
-      </div>
-
-      {/* Display filtered groups */}
-      <h2>Available Study Groups:</h2>
-      {groups.length > 0 ? (
-        <ul>
-          {groups.map((group, index) => (
-            <li key={index}>
-              <h3>{group.group_name}</h3>
-              <p>Study Type: {group.study_type}</p>
-              <p>Course Name: {group.course_name}</p>
-              <p>CRN: {group.CRN}</p>
-              <p>Group Size: {group.groupSize}</p>
-              <p>Meeting Time: {group.meetingTime}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No study groups found for the given filters.</p>
-      )}
+      {/* Create Account Section */}
+      <h1>Create Account</h1>
+      <label htmlFor="emailRegister"> Email: </label>
+      <input
+        id="emailRegister"
+        type="text"
+        placeholder="Enter your email"
+        value={registerEmail}
+        onChange={(e) => setRegisterEmail(e.target.value)}
+      />
+      <br />
+      <br />
+      <label htmlFor="passwordRegister"> Password: </label>
+      <input
+        id="passwordRegister"
+        type="password"
+        placeholder="Enter your password"
+        value={registerPassword}
+        onChange={(e) => setRegisterPassword(e.target.value)}
+      />
+      <br />
+      <br />
+      <button onClick={handleRegister} style={{ marginBottom: '40px' }}>
+        Create Account
+      </button>
+      <p>{registerMessage}</p>
     </div>
   );
 };

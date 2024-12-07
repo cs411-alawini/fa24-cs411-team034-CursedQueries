@@ -85,3 +85,76 @@
     font-size: 18px;
     color: #555;
   }
+
+    /* MyGroups Styles */
+  .mygroups {
+    text-align: center;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 700px;
+  }
+
+  /* Headings */
+  .mygroups h1, .mygroups h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+
+  /* Inputs and Dropdowns */
+  .mygroups input, .mygroups select {
+    padding: 10px;
+    margin: 10px 0;
+    width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  /* Buttons */
+  .mygroups button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #2980b9;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .mygroups button:hover {
+    background-color: #3498db;
+  }
+
+  /* Group List */
+  .mygroups ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  .mygroups li {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .mygroups {
+      width: 90%;
+    }
+
+    .mygroups input,
+    .mygroups select,
+    .mygroups button {
+      width: 100%;
+    }
+  }

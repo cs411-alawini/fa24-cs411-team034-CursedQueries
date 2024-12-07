@@ -10,7 +10,6 @@ const MyGroups = () => {
     const [userGroups, setUserGroups] = useState([]);
     const [manageGroups, setManageGroups] = useState([]);
     const [createId, setCreateId] = useState([]);
-    const [joinId, setJoinId] = useState([]);
     const [deleteId, setDeleteId] = useState([]);
     const [quitId, setQuitId] = useState([]);
 
@@ -37,21 +36,6 @@ const MyGroups = () => {
                     setGroups([...groups, newGroup])
                     setManageGroups([...manageGroups, newGroup]);
                     setUserGroups([...userGroups, newGroup])
-                }
-            }
-        }
-    }
-
-    const joinGroup = () => {
-        if (joinId !== null) {
-            const trimId = joinId.trim();
-            if (trimId !== "") {
-                if (!groups.some((group) => group.group_id === joinId)) {
-                    postMessage("Group Does Not Exist");
-                } else if (userGroups.some((group) => group.group_id === joinId)) {
-                    postMessage("You are Already in This Group");
-                } else {
-                    setUserGroups([...userGroups, groups[joinId]]);
                 }
             }
         }
@@ -88,7 +72,7 @@ const MyGroups = () => {
     }
 
     return (
-        <div classname = "mygroups">
+        <div className="mygroups">
             {/*create a group*/}
             <h1>Create A Group</h1>
             <label htmlFor="creategroupid"></label>
@@ -102,21 +86,6 @@ const MyGroups = () => {
             <button onClick={createGroup}>
                 Create Group
             </button>{" "}
-
-            {/*join a pre-existing group*/}
-            <h1>Join A Group</h1>
-            <label htmlFor="joingroupid"></label>
-            <input
-                id = "joingroupid"
-                type = "text"
-                placeholder="Enter Group Id"
-                value = {joinId}
-                onChange={(e) => setJoinId(e.target.value)}
-            />
-            <button onClick={joinGroup}>
-                Join Group
-            </button>{" "}
-            <div><br/><br/></div>
 
             {/*delete groups you manage*/}
             <h1>Delete A Group</h1>
