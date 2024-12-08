@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../App.css';
-//import Axios from 'axios';
+import Axios from 'axios';
 
 const user_id = "id123"
 
@@ -12,6 +12,7 @@ const MyGroups = () => {
     const [createId, setCreateId] = useState([]);
     const [deleteId, setDeleteId] = useState([]);
     const [quitId, setQuitId] = useState([]);
+    const [message, setMessage] = useState("")
 
     useEffect(() => {
         fetchGroups();
