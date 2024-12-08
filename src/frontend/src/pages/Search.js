@@ -1,56 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "../App.css";
+import Axios from "axios";
 import TimeWidget from "../components/TimeWidget"; // Adjust the path as needed
 
 const Search = () => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
-  const [groups, setGroups] = useState([
-    {
-      id: "1",
-      name: "Math Study Group",
-      courseCode: "MATH101",
-      subject: "Mathematics",
-      members: ["user123", "user456"],
-    },
-    {
-      id: "2",
-      name: "CS Study Group",
-      courseCode: "CS101",
-      subject: "Computer Science",
-      members: ["user789"],
-    },
-  ]); // Replace with API data
-  const [currentUser] = useState("user123"); // Replace with authentication logic
+  const [groups, setGroups] = useState([]); //initially fetch from the backend
+  const [courseCode, setCourseCode] = useState("");
+  const [subject, setSubject] = useState("");
+  const [currentUser] = useState("user123"); //replace with authentication logic
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const toggleTimeSlot = (day, time) => {
-    console.log(`Toggled ${time} on ${day}`);
+  //fetch groups from backend
+  useEffect(() => {
+    const fetchGroups = async () => {
+      setLoading(true);
+      try {
+        const response = await Axios.get("http://localhost:5000/api/homepage");
+        setGroups(response.data);
+        setError("");
+      } catch (err) {
+        setError("Error fetching groups. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGroups();
+  }, []);
+
+  const handleFilter = async () => {
+    setLoading(true);
+    try {
+      const response = await Axios.get("http://localhost:5000/api/homepage", {
+        params: { course_code: courseCode, department: subject },
+      });
+      setGroups(response.data);
+      setError("");
+    } catch (err) {
+      setError("Error filtering groups. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const clearFilters = () => {
-    console.log("Cleared filters");
-  };
-
-  const handleJoinGroup = (groupId) => {
-    const group = groups.find((g) => g.id === groupId);
+  //handle joining group
+  const handleJoinGroup = async (groupId) => {
     if (!currentUser) {
       alert("You must be logged in to join a group.");
       return;
     }
 
-    if (group.members.includes(currentUser)) {
-      alert("You are already part of this group.");
-      return;
+    try {
+      await Axios.post(`http://localhost:5000/api/groups/${groupId}/join`, {
+        user_id: currentUser,
+      });
+      alert("Successfully joined the group.");
+      //refetch groups to update membership
+      const response = await Axios.get("http://localhost:5000/api/homepage");
+      setGroups(response.data);
+    } catch (error) {
+      alert("Error joining group. Please try again.");
+      console.error(error);
     }
+  };
 
-    // Update group members (Replace this with an API call)
-    const updatedGroups = groups.map((g) =>
-      g.id === groupId
-        ? { ...g, members: [...g.members, currentUser] }
-        : g
-    );
-    setGroups(updatedGroups);
-    alert(`Successfully joined the group: ${group.name}`);
+  const clearFilters = () => {
+    setCourseCode("");
+    setSubject("");
+    handleFilter();
   };
 
   return (
