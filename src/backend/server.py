@@ -11,7 +11,7 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="team034", 
+  password="group034", 
   database="StudyGroup"
 )
 
@@ -86,6 +86,42 @@ def filter_by_course_code():
         print('Error:', e)
         return jsonify({'error': str(e)})
 
+#add login endpoint to be compatible with frontend
+@app.route('/api/homepage/login', methods=['POST'])
+def login():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+
+        with db.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM users WHERE email = %s AND password = %s"
+            cursor.execute(sql, (email, password))
+            user = cursor.fetchone()
+            if user:
+                return jsonify({"success": True, "message": "Login successful!"})
+            else:
+                return jsonify({"success": False, "message": "Invalid email or password."})
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({"success": False, "message": str(e)})
+
+#add create-user endpoint for frontend
+@app.route('/api/create-user', methods=['POST'])
+def create_user():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+
+        with db.cursor() as cursor:
+            sql = "INSERT INTO users (email, password) VALUES (%s, %s)"
+            cursor.execute(sql, (email, password))
+            db.commit()
+            return jsonify({"success": True, "message": "Account created successfully!"})
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({"success": False, "message": str(e)})
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True) # Sets development mode

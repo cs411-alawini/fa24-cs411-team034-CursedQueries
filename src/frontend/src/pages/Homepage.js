@@ -14,23 +14,41 @@ const Homepage = () => {
   const [registerMessage, setRegisterMessage] = useState('');
 
   // Handle Login
-  const handleLogin = () => {
-    // Replace with actual API call
-    if (loginEmail === 'test@example.com' && loginPassword === 'password') {
-      setLoginMessage('Login successful!');
-    } else {
-      setLoginMessage('Invalid email or password.');
+  const handleLogin = async () => {
+    try {
+      const response = await Axios.post('http://localhost:5000/api/homepage/login', {
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (response.data.success) {
+        setLoginMessage('Login successful!');
+        // Optionally redirect or store user session
+      } else {
+        setLoginMessage('Invalid email or password.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginMessage('An error occurred. Please try again.');
     }
   };
 
   // Handle Registration
   const handleRegister = async () => {
     try {
-      // Replace with actual API call
-      console.log(`Registering: ${registerEmail}, ${registerPassword}`);
-      setRegisterMessage('Account created successfully!');
+      const response = await Axios.post('http://localhost:5000/api/create-user', {
+        email: registerEmail,
+        password: registerPassword,
+      });
+
+      if (response.data.success) {
+        setRegisterMessage('Account created successfully!');
+      } else {
+        setRegisterMessage('Error creating account.');
+      }
     } catch (error) {
-      setRegisterMessage('Error creating account. Please try again.');
+      console.error('Registration error:', error);
+      setRegisterMessage('An error occurred. Please try again.');
     }
   };
 
