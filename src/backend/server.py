@@ -123,5 +123,31 @@ def create_user():
         print('Error:', e)
         return jsonify({"success": False, "message": str(e)})
 
+#fetch-user-groups
+@app.route('/api/groups/user/<user_id>', methods=['GET'])
+def get_user_groups(user_id):
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            sql = """SELECT * FROM groups 
+                     JOIN membership ON groups.group_id = membership.group_id 
+                     WHERE membership.user_id = %s"""
+            cursor.execute(sql, (user_id,))
+            results = cursor.fetchall()
+            return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+#fetch-managed-groups
+@app.route('/api/groups/managed/<user_id>', methods=['GET'])
+def get_managed_groups(user_id):
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            sql = "SELECT * FROM groups WHERE manager_id = %s"
+            cursor.execute(sql, (user_id,))
+            results = cursor.fetchall()
+            return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 if __name__ == "__main__":
     app.run(port=5000, debug=True) # Sets development mode

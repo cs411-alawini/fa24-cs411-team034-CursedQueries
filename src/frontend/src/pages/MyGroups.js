@@ -13,6 +13,21 @@ const MyGroups = () => {
     const [deleteId, setDeleteId] = useState([]);
     const [quitId, setQuitId] = useState([]);
 
+    useEffect(() => {
+        fetchGroups();
+      }, []);
+    
+      const fetchGroups = async () => {
+        try {
+          const userGroupsResponse = await Axios.get(`http://localhost:5000/api/groups/user/${user_id}`);
+          const manageGroupsResponse = await Axios.get(`http://localhost:5000/api/groups/managed/${user_id}`);
+          setUserGroups(userGroupsResponse.data);
+          setManageGroups(manageGroupsResponse.data);
+        } catch (error) {
+          console.error('Error fetching groups:', error);
+        }
+      };
+
     const handleDeleteChange = (event) => {
         setDeleteId(event.target.value);
     };
@@ -21,55 +36,74 @@ const MyGroups = () => {
         setQuitId(event.target.value);
     };
 
-    const createGroup = () => {
-        if (createId !== null) {
-            const trimId = createId.trim();
-            if (trimId !== "") {
-                if (groups.some((group) => group.group_id === trimId)) {
-                    postMessage("Id already in use");
-                } else {
-                    const newGroup = {
-                    manager_id: user_id,
-                    group_id: trimId,
-                    group_members: [user_id]
-                    };
-                    setGroups([...groups, newGroup])
-                    setManageGroups([...manageGroups, newGroup]);
-                    setUserGroups([...userGroups, newGroup])
-                }
-            }
+    const createGroup = async () => {
+        try {
+          if (!createId.trim()) {
+            setMessage('Group ID cannot be empty.');
+            return;
+          }
+    
+          const response = await Axios.post('http://localhost:5000/api/groups', {
+            group_id: createId,
+            manager_id: user_id,
+          });
+    
+          if (response.data.success) {
+            setMessage('Group created successfully.');
+            fetchGroups();
+          } else {
+            setMessage(response.data.message || 'Error creating group.');
+          }
+        } catch (error) {
+          console.error('Error creating group:', error);
+          setMessage('Error creating group.');
         }
-    }
+      };
 
-    const deleteGroup = () => {
-        if (deleteId !== "" && manageGroups.some((group) => group.group_id === deleteId)) {
-            setGroups(groups.filter((groups) => {
-                return groups.group_id !== deleteId;
-            }));
-            setUserGroups(userGroups.filter((userGroups) => {
-                return userGroups.group_id !== deleteId;
-            }));
-            setManageGroups(manageGroups.filter((manageGroups) => {
-                return manageGroups.group_id !== deleteId;
-            }));
+      const deleteGroup = async () => {
+        try {
+          if (!deleteId) {
+            setMessage('Please select a group to delete.');
+            return;
+          }
+    
+          const response = await Axios.delete(`http://localhost:5000/api/groups/${deleteId}`);
+    
+          if (response.data.success) {
+            setMessage('Group deleted successfully.');
+            fetchGroups();
+          } else {
+            setMessage(response.data.message || 'Error deleting group.');
+          }
+        } catch (error) {
+          console.error('Error deleting group:', error);
+          setMessage('Error deleting group.');
         }
-    }
+      };
+    
 
-    const quitGroup = () => {
-        if (quitId !== "" && userGroups.some((group) => group.group_id === quitId)) {
-            setUserGroups(userGroups.filter((userGroups) => {
-                return userGroups.group_id !== quitId;
-            }));
-            if (manageGroups.some((group) => group.group_id === quitId)) {
-                setGroups(groups.filter((groups) => {
-                    return groups.group_id !== quitId;
-                }));
-                setManageGroups(manageGroups.filter((manageGroups) => {
-                    return manageGroups.group_id !== quitId;
-                }));
-            }
+      const quitGroup = async () => {
+        try {
+          if (!quitId) {
+            setMessage('Please select a group to quit.');
+            return;
+          }
+    
+          const response = await Axios.post(`http://localhost:5000/api/groups/${quitId}/quit`, {
+            user_id,
+          });
+    
+          if (response.data.success) {
+            setMessage('Successfully quit the group.');
+            fetchGroups();
+          } else {
+            setMessage(response.data.message || 'Error quitting group.');
+          }
+        } catch (error) {
+          console.error('Error quitting group:', error);
+          setMessage('Error quitting group.');
         }
-    }
+      };
 
     return (
         <div className="mygroups">
