@@ -6,14 +6,15 @@ import TimeWidget from "../components/TimeWidget"; // Adjust the path as needed
 
 const Search = () => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
-  const [groups, setGroups] = useState([]); //initially fetch from the backend
+  const [groups, setGroups] = useState([]); // Initially fetch from the backend
   const [courseCode, setCourseCode] = useState("");
   const [subject, setSubject] = useState("");
-  const [currentUser] = useState("user123"); //replace with authentication logic
+  const [selectedTimes, setSelectedTimes] = useState([]); // Manage time slots
+  const [currentUser] = useState("user123"); // Replace with authentication logic
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  //fetch groups from backend
+  // Fetch groups from backend
   useEffect(() => {
     const fetchGroups = async () => {
       setLoading(true);
@@ -34,7 +35,7 @@ const Search = () => {
     setLoading(true);
     try {
       const response = await Axios.get("http://localhost:5000/api/homepage", {
-        params: { course_code: courseCode, department: subject },
+        params: { course_code: courseCode, department: subject, meeting_times: selectedTimes },
       });
       setGroups(response.data);
       setError("");
@@ -45,7 +46,19 @@ const Search = () => {
     }
   };
 
-  //handle joining group
+  const toggleTimeSlot = (timeSlot) => {
+    setSelectedTimes((prev) =>
+      prev.includes(timeSlot) ? prev.filter((t) => t !== timeSlot) : [...prev, timeSlot]
+    );
+  };
+
+  const clearFilters = () => {
+    setCourseCode("");
+    setSubject("");
+    setSelectedTimes([]);
+    handleFilter();
+  };
+
   const handleJoinGroup = async (groupId) => {
     if (!currentUser) {
       alert("You must be logged in to join a group.");
@@ -57,7 +70,7 @@ const Search = () => {
         user_id: currentUser,
       });
       alert("Successfully joined the group.");
-      //refetch groups to update membership
+      // Refetch groups to update membership
       const response = await Axios.get("http://localhost:5000/api/homepage");
       setGroups(response.data);
     } catch (error) {
@@ -66,20 +79,24 @@ const Search = () => {
     }
   };
 
-  const clearFilters = () => {
-    setCourseCode("");
-    setSubject("");
-    handleFilter();
-  };
-
   return (
     <div className="search-page">
       <h1>Search Study Groups</h1>
       <p>Find the perfect study group by filtering below:</p>
 
       <div className="search-bar">
-        <input type="text" placeholder="Filter by Course Code" />
-        <input type="text" placeholder="Filter by Subject" />
+        <input
+          type="text"
+          placeholder="Filter by Course Code"
+          value={courseCode}
+          onChange={(e) => setCourseCode(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Filter by Subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+        />
         <button onClick={() => setIsWidgetOpen(true)}>Filter by Meeting Time</button>
       </div>
 
