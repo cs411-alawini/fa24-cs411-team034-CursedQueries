@@ -11,7 +11,7 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="kim760128", 
+  password="team034", 
   database="StudyGroup"
 )
 
@@ -264,6 +264,31 @@ def delete_user_contact():
         print('Error:', e)
         return jsonify({'error': str(e)})
 
+# Use a testing endpoint to confirm the database connection.
+def get_db_connection():
+    try:
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="kim760128",
+            database="StudyGroup"
+        )
+    except mysql.connector.Error as err:
+        print(f"Database connection error: {err}")
+        return None
+
+def test_db_connection():
+    try:
+        connection = get_db_connection()
+        if connection is None:
+            return jsonify({"success": False, "message": "Database connection failed."})
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        connection.close()
+        return jsonify({"success": True, "message": "Database connection is successful."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
     
 if __name__ == "__main__":
