@@ -11,17 +11,21 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="team034", 
+  password="group034", 
   database="StudyGroup"
 )
 
-# 1. Example API Route to test frontend/backend 
+# ==========================================================================================
+# Backend Functionality Testing
+# ==========================================================================================
+
+# 1. Example route to test frontend/backend communication 
 # NOTE: (To test, you need to include frontend -> pages ->Profile in frontend -> App.js )
 @app.route("/members")
 def members():
     return {"members": ["Member1", "Member2", "Member3"]}
 
-# 2. Example API Route to test database connection.
+# 2. Example backend route to test database connection
 @app.route("/api")
 def index():
     try:
@@ -35,16 +39,45 @@ def index():
                     ON gc.CRN = c.CRN
                     WHERE c.course_code = %s
                     GROUP BY c.CRN'''
-            cursor.execute(sql, (course_code,))
+            
+            cursor.execute(sql, (course_code))
             results = cursor.fetchall()
             return jsonify(results)
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
 
+# 3. Test database connection using a testing endpoint
+def get_db_connection():
+    try:
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="kim760128",
+            database="StudyGroup"
+        )
+    except mysql.connector.Error as err:
+        print(f"Database connection error: {err}")
+        return None
+
+# 4. Secondary test for database connection via a simple query
+def test_db_connection():
+    try:
+        connection = get_db_connection()
+        if connection is None:
+            return jsonify({"success": False, "message": "Database connection failed."})
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        connection.close()
+        return jsonify({"success": True, "message": "Database connection is successful."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
 # ==========================================================================================
 # SEARCH
 # ==========================================================================================
+
 @app.route('/api/homepage', methods=['GET'])
 def filter_by_course_code():
     try:
@@ -92,6 +125,9 @@ def filter_by_course_code():
         print('Error:', e)
         return jsonify({'error': str(e)})
 
+# ==========================================================================================
+# MY GROUPS
+# ==========================================================================================
 
 @app.route('/api/groups/<group_id>/join', methods=['POST'])
 def join_group(group_id):
@@ -183,7 +219,7 @@ def get_managed_groups(user_id):
 # PROFILE 
 # ==========================================================================================
 
-# 4. API Route to test EDIT PROFILE - Profile
+# EDIT PROFILE - Profile
 @app.route('/api/profile/editprofile', methods=['POST'])
 def edit_user_profile():
     try:
@@ -219,7 +255,7 @@ def edit_user_profile():
         print('Error:', e)
         return jsonify({'error': str(e)})
 
-# 4. API Route to test ADD CONTACT - Profile
+# ADD CONTACT - Profile
 @app.route('/api/profile/addcontact', methods=['POST'])
 def add_user_contact():
     try:
@@ -241,7 +277,7 @@ def add_user_contact():
         print('Error:', e)
         return jsonify({'error': str(e)})
     
-# 4. API Route to test DELETE CONTACT - Profile
+# DELETE CONTACT - Profile
 @app.route('/api/profile/removecontact', methods=['POST'])
 def delete_user_contact():
     try:
@@ -263,33 +299,8 @@ def delete_user_contact():
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
-
-# Use a testing endpoint to confirm the database connection.
-def get_db_connection():
-    try:
-        return mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="kim760128",
-            database="StudyGroup"
-        )
-    except mysql.connector.Error as err:
-        print(f"Database connection error: {err}")
-        return None
-
-def test_db_connection():
-    try:
-        connection = get_db_connection()
-        if connection is None:
-            return jsonify({"success": False, "message": "Database connection failed."})
-        cursor = connection.cursor()
-        cursor.execute("SELECT 1")
-        cursor.close()
-        connection.close()
-        return jsonify({"success": True, "message": "Database connection is successful."})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
+    
+    
     
 if __name__ == "__main__":
     app.run(port=5000, debug=True) # Sets development mode
