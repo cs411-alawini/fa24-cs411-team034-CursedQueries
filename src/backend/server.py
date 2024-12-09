@@ -42,49 +42,79 @@ def index():
         print('Error:', e)
         return jsonify({'error': str(e)})
 
-
-# 3. API Toute to test 'Filter by Course Code' - SEARCH
+# ==========================================================================================
+# SEARCH
+# ==========================================================================================
 @app.route('/api/homepage', methods=['GET'])
 def filter_by_course_code():
     try:
         with db.cursor(dictionary=True) as cursor:
             conditions = []
             cond_values = []
-            
-            # Extract args + init SQL
+
+            # Extract args from request
             course_code = request.args.get('course_code')
             department = request.args.get('department')
-            sql = '''SELECT g.group_name, g.study_type, c.CRN, c.course_name, COUNT(g.group_id) as groupSize
-            FROM studygroup AS g
-            JOIN membership as m
-            ON g.group_id = m.group_id
-            JOIN group_courses AS gc
-            ON g.group_id = gc.group_id
-            JOIN courses AS c
-            ON gc.CRN = c.CRN
-            '''
-            
-            # Apply conditionals if present and conclude SQL 
+            meeting_times = request.args.get('meeting_times')
+            user_id = request.args.get('user_id')
+
+            # Base SQL query
+            sql = '''SELECT g.group_id, g.group_name, g.study_type, c.course_code, c.department, 
+                             c.course_name, COUNT(m.user_id) as groupSize,
+                             EXISTS(SELECT 1 FROM membership WHERE membership.group_id = g.group_id 
+                                    AND membership.user_id = %s) as isMember
+                     FROM studygroup AS g
+                     JOIN group_courses AS gc ON g.group_id = gc.group_id
+                     JOIN courses AS c ON gc.CRN = c.CRN
+                     LEFT JOIN membership AS m ON g.group_id = m.group_id
+                     WHERE 1=1 '''
+
+            cond_values.append(user_id)  # For checking membership
+
+            # Add filters dynamically
             if course_code:
                 conditions.append("c.course_code = %s")
                 cond_values.append(course_code)
             if department:
                 conditions.append("c.department = %s")
                 cond_values.append(department)
-            if conditions is not None:
-                sql += "\nWHERE " + " AND ".join(conditions)
 
-            sql += '''\nGROUP BY g.group_id, c.CRN
-                    ORDER BY course_name '''
-            
-            # Execute sql and return results
+            # Append conditions to SQL
+            if conditions:
+                sql += " AND " + " AND ".join(conditions)
+
+            sql += " GROUP BY g.group_id, c.course_code, c.department ORDER BY c.course_name"
+
             cursor.execute(sql, tuple(cond_values))
             results = cursor.fetchall()
-            print('results:', jsonify(results))
             return jsonify(results)
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
+
+
+@app.route('/api/groups/<group_id>/join', methods=['POST'])
+def join_group(group_id):
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+
+        with db.cursor() as cursor:
+            # Check if the user is already a member
+            cursor.execute("SELECT * FROM membership WHERE group_id = %s AND user_id = %s", (group_id, user_id))
+            if cursor.fetchone():
+                return jsonify({"success": False, "message": "You are already a member of this group."})
+
+            # Add the user to the group
+            cursor.execute("INSERT INTO membership (group_id, user_id) VALUES (%s, %s)", (group_id, user_id))
+            db.commit()
+            return jsonify({"success": True, "message": "Successfully joined the group."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+# ==========================================================================================
+# LOGIN
+# ==========================================================================================
 
 #add login endpoint to be compatible with frontend
 @app.route('/api/homepage/login', methods=['POST'])
