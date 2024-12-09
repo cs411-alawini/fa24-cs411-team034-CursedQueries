@@ -11,7 +11,7 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="group034", 
+  password="kim760128", 
   database="StudyGroup"
 )
 

@@ -1,7 +1,7 @@
 import React from "react";
-import "./TimeWidget.css"; // New CSS file for the widget
+import "./TimeWidget.css";
 
-const TimeWidget = ({ toggleTimeSlot, clearFilters, closeWidget }) => {
+const TimeWidget = ({ toggleTimeSlot, clearFilters, closeWidget, selectedTimes }) => {
   const timeSlots = [
     "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM",
     "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"
@@ -19,12 +19,19 @@ const TimeWidget = ({ toggleTimeSlot, clearFilters, closeWidget }) => {
           <div key={day} className="day-column">
             <h4>{day}</h4>
             <div className="time-slots">
-              {timeSlots.map((time) => (
-                <label key={`${day}-${time}`} className="time-slot">
-                  <input type="checkbox" onChange={() => toggleTimeSlot(day, time)} />
-                  {time}
-                </label>
-              ))}
+              {timeSlots.map((time) => {
+                const timeKey = `${day}-${time}`;
+                return (
+                  <label key={timeKey} className="time-slot">
+                    <input
+                      type="checkbox"
+                      checked={selectedTimes.includes(timeKey)}
+                      onChange={() => toggleTimeSlot(day, time)}
+                    />
+                    {time}
+                  </label>
+                );
+              })}
             </div>
           </div>
         ))}

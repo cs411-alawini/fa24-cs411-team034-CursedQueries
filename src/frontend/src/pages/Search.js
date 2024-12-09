@@ -6,41 +6,50 @@ import TimeWidget from "../components/TimeWidget"; // Adjust the path as needed
 
 const Search = () => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
-  const [groups, setGroups] = useState([]); // Groups fetched from backend
+  const [groups, setGroups] = useState([]);
   const [courseCode, setCourseCode] = useState("");
   const [subject, setSubject] = useState("");
-  const [selectedTimes, setSelectedTimes] = useState([]);
+  const [selectedTimes, setSelectedTimes] = useState([]); // Track selected times
   const [currentUser] = useState("user123"); // Replace with actual user ID logic
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
-
   const fetchGroups = async () => {
-    setLoading(true);
+    setLoading(true); // Start loading indicator
     try {
       const response = await Axios.get("http://localhost:5000/api/homepage", {
         params: {
           course_code: courseCode,
           department: subject,
           meeting_times: selectedTimes,
-          user_id: currentUser, // Include current user ID
+          user_id: currentUser, // Replace with actual user ID if necessary
         },
       });
-      setGroups(response.data);
-      setError("");
+  
+      // Validate response data
+      if (Array.isArray(response.data)) {
+        setGroups(response.data); // Update groups state with the API response
+      } else {
+        console.error("API returned non-array response:", response.data);
+        setGroups([]); // Set groups to an empty array if the response is invalid
+      }
+  
+      setError(""); // Clear any previous errors
     } catch (err) {
+      console.error("Error fetching groups:", err);
       setError("Error fetching groups. Please try again.");
+      setGroups([]); // Ensure groups is reset on error
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading indicator
     }
   };
-
-  const toggleTimeSlot = (timeSlot) => {
+  
+  const toggleTimeSlot = (day, timeSlot) => {
+    const timeKey = `${day}-${timeSlot}`;
     setSelectedTimes((prev) =>
-      prev.includes(timeSlot) ? prev.filter((t) => t !== timeSlot) : [...prev, timeSlot]
+      prev.includes(timeKey)
+        ? prev.filter((t) => t !== timeKey)
+        : [...prev, timeKey]
     );
   };
 
@@ -48,7 +57,7 @@ const Search = () => {
     setCourseCode("");
     setSubject("");
     setSelectedTimes([]);
-    fetchGroups();
+    setGroups([]);
   };
 
   const handleJoinGroup = async (groupId) => {
@@ -93,6 +102,7 @@ const Search = () => {
           onChange={(e) => setSubject(e.target.value)}
         />
         <button onClick={() => setIsWidgetOpen(true)}>Filter by Meeting Time</button>
+        <button onClick={fetchGroups}>Search</button>
       </div>
 
       {isWidgetOpen && (
@@ -100,10 +110,13 @@ const Search = () => {
           toggleTimeSlot={toggleTimeSlot}
           clearFilters={clearFilters}
           closeWidget={() => setIsWidgetOpen(false)}
+          selectedTimes={selectedTimes} // Pass selected times to the widget
         />
       )}
 
       <div className="group-results">
+        {loading && <p>Loading...</p>}
+        {error && <p>{error}</p>}
         {groups.map((group) => (
           <div key={group.group_id} className="group-card">
             <h3>{group.group_name}</h3>
