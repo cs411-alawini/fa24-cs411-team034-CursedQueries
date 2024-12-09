@@ -32,7 +32,10 @@ export default function Profile() {
 
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/editprofile', {
-        params: userinfo
+        user_id: userId,
+        email: email,
+        password: password,
+        study_pref: studyPreference
       });
       if (response.data.success) {
         setProfileMsg('Edit successful.');

@@ -223,17 +223,20 @@ def get_managed_groups(user_id):
 @app.route('/api/profile/editprofile', methods=['POST'])
 def edit_user_profile():
     try:
-        with db.cursor(dictionary=True) as cursor:
+        # Extract args
+        data = request.json
+        user_id = data.get('user_id')
+        email = data.get('email')
+        password = data.get('password')
+        study_pref = data.get('study_pref')
+            
+        with db.cursor() as cursor:
+            # Init Sql statement
             conditions = []
             cond_values = []
-            
-            # Extract args + init SQL
-            user_id = request.args.get('user_id')
-            email = request.args.get('email')
-            password = request.args.get('password')
-            study_pref = request.args.get('study_pref')
             sql = '''UPDATE Users SET '''
             
+            # Add filters dynamically
             if email:
                 conditions.append("email = %s")
                 cond_values.append(email)
@@ -243,6 +246,8 @@ def edit_user_profile():
             if study_pref:
                 conditions.append("study_pref = %s")
                 cond_values.append(study_pref)
+
+            # Append conditions to SQL
             if conditions is not None:
                 sql += ", ".join(conditions) + "\n WHERE user_id = %s"
                 cond_values.append(user_id)
@@ -259,20 +264,23 @@ def edit_user_profile():
 @app.route('/api/profile/addcontact', methods=['POST'])
 def add_user_contact():
     try:
-        with db.cursor(dictionary=True) as cursor:
-            # Extract args + init SQL
-            user_id = request.args.get('user_id')
-            platform = request.args.get('platform')
-            username = request.args.get('username')
+        # Extract args
+        data = request.json
+        user_id = data.get('user_id')
+        platform = data.get('platform')
+        username = data.get('username')
 
+        with db.cursor() as cursor:
+            # Execute sql - insert user_contact row
             sql = '''INSERT INTO User_Contact (contact_id, user_id, username)
             VALUES (%s, %s, %s)'''
             cursor.execute(sql, ('1', user_id, username)) # NOTE: CHANGE THIS LATER
 
+            # Execute sql - insert contact row
             sql = "INSERT INTO Contacts (contact_id, contact_name) VALUES (%s, %s)"
             cursor.execute(sql, ('1', platform)) # NOTE: CHANGE THIS LATER
             db.commit()
-            return jsonify({"success": True, "message": "Account created successfully!"})
+            return jsonify({"success": True})
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
@@ -281,26 +289,26 @@ def add_user_contact():
 @app.route('/api/profile/removecontact', methods=['POST'])
 def delete_user_contact():
     try:
-        with db.cursor(dictionary=True) as cursor:
-            # Extract args + init SQL
-            user_id = request.args.get('user_id')
-            platform = request.args.get('platform')
-            username = request.args.get('username')
+         # Extract args
+        data = request.json
+        user_id = data.get('user_id')
+        platform = data.get('platform')
+        username = data.get('username')
 
+        with db.cursor() as cursor:
+             # Execute sql - delete contact row
             sql = '''DELETE FROM User_Contact
-            USING Contacts
-            WHERE User_Contact.user_id = %s
-            AND Contacts.contact_name = %s
-            AND User_Contact.username = 'desired_username';'''
-
+            WHERE user_id = %s
+            AND ID = %s
+            AND username = %s'''
             cursor.execute(sql, (user_id, platform, username)) # NOTE: CHANGE THIS LATER
             db.commit()
-            return jsonify({"success": True, "message": "Account created successfully!"})
+            return jsonify({"success": True})
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
     
-    
+
     
 if __name__ == "__main__":
     app.run(port=5000, debug=True) # Sets development mode
