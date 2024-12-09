@@ -149,5 +149,92 @@ def get_managed_groups(user_id):
     except Exception as e:
         return jsonify({'error': str(e)})
 
+# ==========================================================================================
+# PROFILE 
+# ==========================================================================================
+
+# 4. API Route to test EDIT PROFILE - Profile
+@app.route('/api/profile/editprofile', methods=['POST'])
+def edit_user_profile():
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            conditions = []
+            cond_values = []
+            
+            # Extract args + init SQL
+            user_id = request.args.get('user_id')
+            email = request.args.get('email')
+            password = request.args.get('password')
+            study_pref = request.args.get('study_pref')
+            sql = '''UPDATE Users SET '''
+            
+            if email:
+                conditions.append("email = %s")
+                cond_values.append(email)
+            if password:
+                conditions.append("password = %s")
+                cond_values.append(password)
+            if study_pref:
+                conditions.append("study_pref = %s")
+                cond_values.append(study_pref)
+            if conditions is not None:
+                sql += ", ".join(conditions) + "\n WHERE user_id = %s"
+                cond_values.append(user_id)
+
+            # Execute sql and return results 
+            cursor.execute(sql, tuple(cond_values))
+            db.commit()
+            return jsonify({"success": True})
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({'error': str(e)})
+
+# 4. API Route to test ADD CONTACT - Profile
+@app.route('/api/profile/addcontact', methods=['POST'])
+def add_user_contact():
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            # Extract args + init SQL
+            user_id = request.args.get('user_id')
+            platform = request.args.get('platform')
+            username = request.args.get('username')
+
+            sql = '''INSERT INTO User_Contact (contact_id, user_id, username)
+            VALUES (%s, %s, %s)'''
+            cursor.execute(sql, ('1', user_id, username)) # NOTE: CHANGE THIS LATER
+
+            sql = "INSERT INTO Contacts (contact_id, contact_name) VALUES (%s, %s)"
+            cursor.execute(sql, ('1', platform)) # NOTE: CHANGE THIS LATER
+            db.commit()
+            return jsonify({"success": True, "message": "Account created successfully!"})
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({'error': str(e)})
+    
+# 4. API Route to test DELETE CONTACT - Profile
+@app.route('/api/profile/removecontact', methods=['POST'])
+def delete_user_contact():
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            # Extract args + init SQL
+            user_id = request.args.get('user_id')
+            platform = request.args.get('platform')
+            username = request.args.get('username')
+
+            sql = '''DELETE FROM User_Contact
+            USING Contacts
+            WHERE User_Contact.user_id = %s
+            AND Contacts.contact_name = %s
+            AND User_Contact.username = 'desired_username';'''
+
+            cursor.execute(sql, (user_id, platform, username)) # NOTE: CHANGE THIS LATER
+            db.commit()
+            return jsonify({"success": True, "message": "Account created successfully!"})
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({'error': str(e)})
+
+
+    
 if __name__ == "__main__":
     app.run(port=5000, debug=True) # Sets development mode

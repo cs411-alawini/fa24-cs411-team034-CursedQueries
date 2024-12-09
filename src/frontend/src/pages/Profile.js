@@ -1,51 +1,113 @@
 import React, { useState } from 'react'
 import '../App.css'; 
+import Axios from 'axios'
 
 export default function Profile() {
-  // States
-  const [profile, setProfile] = useState('');
+  // States - EDIT PROFILE
+  const [userId] = useState('1');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [studyPreference, setStudyPreference] = useState('');
-  // Temporary - REMOVE AFTER BACKEND IMPLEMENTATION
-  const [profile_database, setProfile_database] = useState('');
+  const [profileMsg, setProfileMsg] = useState('');
+
+  const [email_database, setEmail_database] = useState('');
   const [password_database, setPassword_database] = useState('');
   const [studyPreference_database, setStudyPreference_database] = useState('');
 
+  // States - EDIT CONTACTS
   const [dropdownOption, setDropdownOption] = useState("");
   const [contactInfo, setContactInfo] = useState('');
   const [userContacts, setuserContacts] = useState('');
+  const [contactMsg, setContactMsg] = useState('');
 
-  // Add Contact - Update button handler
-  const updateProfile = () => {
-    setProfile_database(profile);
-    setPassword_database(password);
-    setStudyPreference_database(studyPreference);
+  /* ============================ HANDLERS: EDIT PROFILE ============================ */
+  const updateProfile = async () => {
+
+    const userinfo = {
+      user_id: userId,
+      email: email,
+      password: password,
+      study_pref: studyPreference
+    };
+
+    try {
+      const response = await Axios.post('http://localhost:5000/api/profile/editprofile', {
+        params: userinfo
+      });
+      if (response.data.success) {
+        setProfileMsg('Edit successful.');
+        if (email !== null) setEmail_database(email); 
+        if (password !== null) setPassword_database(password); 
+        if (studyPreference !== null) setStudyPreference_database(studyPreference); 
+      } else {
+        setProfileMsg('Invalid edit parameters.');
+      }
+    } catch (error) {
+      console.error(error);
+      setProfileMsg('Error while editing parameters. Try Again.');
+    }
   };
 
+
+  /* ============================ HANDLERS: EDIT CONTACTS ============================ */
   // Edit Contacts - dropdown handler
   const handleDropdownChange = (event) => {
     setDropdownOption(event.target.value);
   };
 
   // Edit Contacts - Add Contact button handler - Adds contact to list and clear output
-  const addToContacts = () => {
+  const addToContacts = async () => {
     if (dropdownOption.trim() !== "" && contactInfo.trim() !== "") {
       const newContact = {
+        user_id: userId,
         platform: dropdownOption,
         contactInfo: contactInfo,
       };
       
-      setuserContacts([...userContacts, newContact]);
-      setDropdownOption(""); 
-      setContactInfo(""); 
+      try {
+        const response = await Axios.post('http://localhost:5000/api/profile/addcontact', {
+          params: newContact
+        });
+        if (response.data.success) {
+          setContactMsg('Add successful.');
+          // Update contacts and clear the feed
+          setuserContacts([...userContacts, newContact]);
+          setDropdownOption(""); 
+          setContactInfo(""); 
+        } else {
+          setContactMsg('Invalid Contact Parameters.');
+        }
+      } catch (error) {
+        console.error(error);
+        setContactMsg('Error while adding contact. Try Again.');
+      } 
     }
   };
   
   // Edit Contacts - Remove Contact button handler
-  const removeContact = () => {
-    setuserContacts(userContacts.filter(
-      userContact => userContact.platform !== dropdownOption && userContact.contactInfo !== contactInfo)
-    );
+  const removeContact = async () => {
+    const deleteContact = {
+      user_id: userId,
+      platform: dropdownOption,
+      contactInfo: contactInfo,
+    };
+
+    try {
+      const response = await Axios.post('http://localhost:5000/api/profile/removecontact', {
+        params: deleteContact
+      });
+      if (response.data.success) {
+        setContactMsg('Delete successful.');
+        setuserContacts(userContacts.filter(
+          userContact => userContact.platform !== dropdownOption && userContact.contactInfo !== contactInfo)
+        );
+      } else {
+        setContactMsg('Invalid Contact Parameters.');
+      }
+    } catch (error) {
+      console.error(error);
+      setContactMsg('Error while deleting contact. Try Again.');
+    } 
   };
 
   return (
@@ -55,17 +117,16 @@ export default function Profile() {
       <h2>Edit Profile</h2><br/>
       
       {/* Set email */}
-      <label htlmlFor="email"> Profile:{" "} </label>
+      <label htlmlFor="email"> Email:{" "} </label>
       <input
         id="email"
         type="text"
         placeholder="Email"
-        value={profile}
-        onChange={(e) => setProfile(e.target.value)}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       /> 
-      {" "}Current: {profile_database}
+      {" "}Set to: {email_database}
       <br/><br/>
-      
 
       {/* Set Password */}
       <label htlmlFor="password"> Password:{" "} </label>
@@ -76,7 +137,7 @@ export default function Profile() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       /> 
-      {" "}Current: {password_database}
+      {" "}Set to: {password_database}
       <br/><br/>
 
       {/* Set Study Preference */}
@@ -88,12 +149,13 @@ export default function Profile() {
         value={studyPreference}
         onChange={(e) => setStudyPreference(e.target.value)}
       /> 
-      {" "}Current: {studyPreference_database}
+      {" "}Set to: {studyPreference_database}
       <br/><br/><br/>
       
       <button onClick={updateProfile}>
         Update 
       </button> <br/><br/>
+      <p>{profileMsg}</p>
 
       <div><br/><hr/><br/></div>
       
@@ -135,6 +197,7 @@ export default function Profile() {
         <button onClick={removeContact}>
           Remove 
         </button>
+        <p>{contactMsg}</p>
         <div><br/><br/></div>
       
       {/* Display/Remove Contacts */}
