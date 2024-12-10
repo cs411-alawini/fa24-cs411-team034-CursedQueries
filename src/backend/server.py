@@ -165,8 +165,8 @@ def login():
                 return jsonify({
                     "success": True,
                     "message": "Login successful!",
-                    "user_id": user['id'],  # Include user_id in the response
-                    "email": user['email']  # Optionally include other info
+                    "user_id": user['id'],
+                    "email": user['email'] 
                 })
             else:
                 return jsonify({"success": False, "message": "Invalid email or password."}), 401
