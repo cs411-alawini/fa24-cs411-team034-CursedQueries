@@ -1,22 +1,21 @@
 import React, { useState, useContext } from "react";
-import '../App.css'; // Ensure CSS is linked correctly
+import '../App.css'; 
 import Axios from 'axios'
-import { useUserContext } from '../context/UserContext'; // Import UserContext
+import { useUserContext } from '../context/UserContext'; 
 
 const Homepage = () => {
-  const { user, setUser } = useUserContext(); // Access user context
+  const { user, setUser } = useUserContext(); 
 
-  // States for Login
+
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
 
-  // States for Create Account
+
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerMessage, setRegisterMessage] = useState('');
 
-  // Handle Login
   const handleLogin = async () => {
     try {
       const response = await Axios.post('http://localhost:5000/api/homepage/login', {
@@ -25,10 +24,13 @@ const Homepage = () => {
       });
 
       if (response.data.success) {
-        setUser(response.data.user); // Set global user context
+        setUser({
+          user_id: response.data.user_id,
+          email: response.data.email,
+        });
         setLoginMessage('Login successful!');
       } else {
-        setLoginMessage('Invalid email or password.');
+        setLoginMessage(response.data.message || 'Invalid email or password.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -36,7 +38,6 @@ const Homepage = () => {
     }
   };
 
-  // Handle Registration
   const handleRegister = async () => {
     try {
       const response = await Axios.post('http://localhost:5000/api/create-user', {
@@ -60,6 +61,7 @@ const Homepage = () => {
       {user ? (
         <div>
           <h1>Welcome, {user.email}!</h1>
+          <p>Your User ID: {user.user_id}</p>
           <p>You are logged in.</p>
         </div>
       ) : (
