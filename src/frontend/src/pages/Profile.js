@@ -16,19 +16,12 @@ export default function Profile() {
 
   // States - EDIT CONTACTS
   const [dropdownOption, setDropdownOption] = useState("");
-  const [contactInfo, setContactInfo] = useState('');
+  const [username, setUsername] = useState('');
   const [userContacts, setuserContacts] = useState('');
   const [contactMsg, setContactMsg] = useState('');
 
   /* ============================ HANDLERS: EDIT PROFILE ============================ */
   const updateProfile = async () => {
-
-    const userinfo = {
-      user_id: userId,
-      email: email,
-      password: password,
-      study_pref: studyPreference
-    };
 
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/editprofile', {
@@ -60,23 +53,24 @@ export default function Profile() {
 
   // Edit Contacts - Add Contact button handler - Adds contact to list and clear output
   const addToContacts = async () => {
-    if (dropdownOption.trim() !== "" && contactInfo.trim() !== "") {
-      const newContact = {
-        user_id: userId,
-        platform: dropdownOption,
-        contactInfo: contactInfo,
-      };
-      
+
+    if (dropdownOption.trim() !== "" && username.trim() !== "") {
       try {
         const response = await Axios.post('http://localhost:5000/api/profile/addcontact', {
-          params: newContact
+          user_id: userId,
+          contact_name: dropdownOption,
+          username: username,
         });
         if (response.data.success) {
           setContactMsg('Add successful.');
           // Update contacts and clear the feed
+          const newContact = {
+            platform: dropdownOption,
+            contactInfo: username,
+          };
           setuserContacts([...userContacts, newContact]);
           setDropdownOption(""); 
-          setContactInfo(""); 
+          setUsername(""); 
         } else {
           setContactMsg('Invalid Contact Parameters.');
         }
@@ -85,24 +79,24 @@ export default function Profile() {
         setContactMsg('Error while adding contact. Try Again.');
       } 
     }
+    else{
+      setContactMsg('Invalid Contact Parameters.');
+    }
   };
   
   // Edit Contacts - Remove Contact button handler
   const removeContact = async () => {
-    const deleteContact = {
-      user_id: userId,
-      platform: dropdownOption,
-      contactInfo: contactInfo,
-    };
 
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/removecontact', {
-        params: deleteContact
+        user_id: userId,
+        contact_name: dropdownOption,
+        username: username,
       });
       if (response.data.success) {
         setContactMsg('Delete successful.');
         setuserContacts(userContacts.filter(
-          userContact => userContact.platform !== dropdownOption && userContact.contactInfo !== contactInfo)
+          userContact => userContact.platform !== dropdownOption && userContact.contactInfo !== username)
         );
       } else {
         setContactMsg('Invalid Contact Parameters.');
@@ -176,11 +170,14 @@ export default function Profile() {
           onChange={handleDropdownChange}
         >
           <option value="" disabled> Select an option </option>
+          <option value="Email">Email</option>
+          <option value="Phone Number">Phone Number</option>
           <option value="Snapchat">Snapchat</option>
+          <option value="Instagram">Instagram</option>
           <option value="Discord">Discord</option>
-          <option value="GroupMe">GroupMe</option>
           <option value="Slack">Slack</option>
-          <option value="Other">Other</option>
+          <option value="Groupme">Other</option>
+          
         </select><br/><br/>
         
         {/* Contact Info */}
@@ -189,8 +186,8 @@ export default function Profile() {
           id="contactInfo"
           type="text"
           placeholder="Contact Info"
-          value={contactInfo}
-          onChange={(e) => setContactInfo(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         /><br/><br/>{"  "}
 
         <button onClick={addToContacts}>

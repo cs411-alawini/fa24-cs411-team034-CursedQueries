@@ -267,18 +267,16 @@ def add_user_contact():
         # Extract args
         data = request.json
         user_id = data.get('user_id')
-        platform = data.get('platform')
+        contact_name = data.get('contact_name')
         username = data.get('username')
 
         with db.cursor() as cursor:
             # Execute sql - insert user_contact row
+            # Get platform contact id here
+
             sql = '''INSERT INTO User_Contact (contact_id, user_id, username)
             VALUES (%s, %s, %s)'''
-            cursor.execute(sql, ('1', user_id, username)) # NOTE: CHANGE THIS LATER
-
-            # Execute sql - insert contact row
-            sql = "INSERT INTO Contacts (contact_id, contact_name) VALUES (%s, %s)"
-            cursor.execute(sql, ('1', platform)) # NOTE: CHANGE THIS LATER
+            cursor.execute(sql, ('4', user_id, username)) # NOTE: CHANGE THIS LATER
             db.commit()
             return jsonify({"success": True})
     except Exception as e:
@@ -292,16 +290,19 @@ def delete_user_contact():
          # Extract args
         data = request.json
         user_id = data.get('user_id')
-        platform = data.get('platform')
+        contact_name = data.get('contact_name')
         username = data.get('username')
+        print(username)
 
         with db.cursor() as cursor:
-             # Execute sql - delete contact row
+             # Execute sql - delete contact row - and return results
             sql = '''DELETE FROM User_Contact
-            WHERE user_id = %s
-            AND ID = %s
-            AND username = %s'''
-            cursor.execute(sql, (user_id, platform, username)) # NOTE: CHANGE THIS LATER
+            USING User_Contact
+            JOIN Contacts ON User_Contact.contact_id = Contacts.contact_id
+            WHERE User_Contact.user_id = %s
+            AND Contacts.contact_name = %s
+            AND User_Contact.username = %s'''
+            cursor.execute(sql, (user_id, contact_name, username)) # NOTE: CHANGE THIS LATER
             db.commit()
             return jsonify({"success": True})
     except Exception as e:
