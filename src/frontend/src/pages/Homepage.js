@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
 import '../App.css'; // Ensure CSS is linked correctly
 import Axios from 'axios'
-import { UserContext } from '../context/UserContext'; // Import UserContext
+import { useUserContext } from '../context/UserContext'; // Import UserContext
 
 const Homepage = () => {
-  const { user, setUser } = useContext(UserContext); // Access user context
+  const { user, setUser } = useUserContext(); // Access user context
 
   // States for Login
   const [loginEmail, setLoginEmail] = useState('');

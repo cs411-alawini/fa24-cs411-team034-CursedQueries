@@ -78,52 +78,46 @@ def test_db_connection():
 # SEARCH
 # ==========================================================================================
 
-@app.route('/api/homepage', methods=['GET'])
-def filter_by_course_code():
-    try:
-        with db.cursor(dictionary=True) as cursor:
-            conditions = []
-            cond_values = []
+@app.route('/api/search', methods=['POST'])
+def search_groups():
+   try:
+       # Extract the user ID from the Authorization header
+       auth_header = request.headers.get('Authorization')
+       if not auth_header or not auth_header.startswith('Bearer '):
+           return jsonify({"success": False, "message": "Missing or invalid user ID."}), 401
 
-            # Extract args from request
-            course_code = request.args.get('course_code')
-            department = request.args.get('department')
-            meeting_times = request.args.get('meeting_times')
-            user_id = request.args.get('user_id')
 
-            # Base SQL query
-            sql = '''SELECT g.group_id, g.group_name, g.study_type, c.course_code, c.department, 
-                             c.course_name, COUNT(m.user_id) as groupSize,
-                             EXISTS(SELECT 1 FROM membership WHERE membership.group_id = g.group_id 
-                                    AND membership.user_id = %s) as isMember
-                     FROM studygroup AS g
-                     JOIN group_courses AS gc ON g.group_id = gc.group_id
-                     JOIN courses AS c ON gc.CRN = c.CRN
-                     LEFT JOIN membership AS m ON g.group_id = m.group_id
-                     WHERE 1=1 '''
+       user_id = auth_header.split(' ')[1]
 
-            cond_values.append(user_id)  # For checking membership
 
-            # Add filters dynamically
-            if course_code:
-                conditions.append("c.course_code = %s")
-                cond_values.append(course_code)
-            if department:
-                conditions.append("c.department = %s")
-                cond_values.append(department)
+       # Extract search parameters from the request body
+       data = request.json
+       department = data.get('department')
+       course_code = data.get('course_code')
 
-            # Append conditions to SQL
-            if conditions:
-                sql += " AND " + " AND ".join(conditions)
 
-            sql += " GROUP BY g.group_id, c.course_code, c.department ORDER BY c.course_name"
+       with db.cursor(dictionary=True) as cursor:
+           sql = '''
+               SELECT g.group_id, g.group_name, g.study_type, c.course_code, c.department,
+                      c.course_name, COUNT(m.user_id) as groupSize,
+                      EXISTS(SELECT 1 FROM membership WHERE membership.group_id = g.group_id
+                             AND membership.user_id = %s) as isMember
+               FROM studygroup AS g
+               JOIN group_courses AS gc ON g.group_id = gc.group_id
+               JOIN courses AS c ON gc.CRN = c.CRN
+               LEFT JOIN membership AS m ON g.group_id = m.group_id
+               WHERE (%s IS NULL OR c.department = %s)
+                 AND (%s IS NULL OR c.course_code = %s)
+               GROUP BY g.group_id, g.group_name, g.study_type, c.course_code, c.department, c.course_name
+           '''
+           cursor.execute(sql, (user_id, department, department, course_code, course_code))
+           groups = cursor.fetchall()
 
-            cursor.execute(sql, tuple(cond_values))
-            results = cursor.fetchall()
-            return jsonify(results)
-    except Exception as e:
-        print('Error:', e)
-        return jsonify({'error': str(e)})
+
+       return jsonify({"success": True, "groups": groups})
+   except Exception as e:
+       print('Error:', e)
+       return jsonify({"success": False, "message": str(e)})
 
 # ==========================================================================================
 # MY GROUPS
