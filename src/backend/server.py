@@ -162,9 +162,14 @@ def login():
             cursor.execute(sql, (email, password))
             user = cursor.fetchone()
             if user:
-                return jsonify({"success": True, "message": "Login successful!"})
+                return jsonify({
+                    "success": True,
+                    "message": "Login successful!",
+                    "user_id": user['id'],  # Include user_id in the response
+                    "email": user['email']  # Optionally include other info
+                })
             else:
-                return jsonify({"success": False, "message": "Invalid email or password."})
+                return jsonify({"success": False, "message": "Invalid email or password."}), 401
     except Exception as e:
         print('Error:', e)
         return jsonify({"success": False, "message": str(e)})
