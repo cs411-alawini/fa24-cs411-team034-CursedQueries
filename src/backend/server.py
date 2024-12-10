@@ -267,10 +267,20 @@ def add_user_contact():
         with db.cursor() as cursor:
             # Execute sql - insert user_contact row
             # Get platform contact id here
+            sql = '''
+                SELECT contact_id
+                FROM Contacts
+                WHERE contact_name = %s
+                LIMIT 1
+            '''
+            cursor.execute(sql, (contact_name,))
+            result = cursor.fetchone()
+            contact_id = result[0]
 
+            # Given contact Id, make a new user_contact
             sql = '''INSERT INTO User_Contact (contact_id, user_id, username)
             VALUES (%s, %s, %s)'''
-            cursor.execute(sql, ('5', user_id, username)) # NOTE: CHANGE THIS LATER
+            cursor.execute(sql, (contact_id, user_id, username)) # NOTE: CHANGE THIS LATER
             db.commit()
             
             return jsonify({"success": True})

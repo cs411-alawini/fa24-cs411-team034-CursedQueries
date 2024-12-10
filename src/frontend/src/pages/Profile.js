@@ -183,7 +183,7 @@ export default function Profile() {
           <option value="Instagram">Instagram</option>
           <option value="Discord">Discord</option>
           <option value="Slack">Slack</option>
-          <option value="Groupme">Other</option>
+          <option value="Groupme">Groupme</option>
           
         </select><br/><br/>
         
