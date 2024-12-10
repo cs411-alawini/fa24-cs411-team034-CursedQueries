@@ -276,8 +276,9 @@ def add_user_contact():
 
             sql = '''INSERT INTO User_Contact (contact_id, user_id, username)
             VALUES (%s, %s, %s)'''
-            cursor.execute(sql, ('4', user_id, username)) # NOTE: CHANGE THIS LATER
+            cursor.execute(sql, ('5', user_id, username)) # NOTE: CHANGE THIS LATER
             db.commit()
+            
             return jsonify({"success": True})
     except Exception as e:
         print('Error:', e)
@@ -287,28 +288,47 @@ def add_user_contact():
 @app.route('/api/profile/removecontact', methods=['POST'])
 def delete_user_contact():
     try:
-         # Extract args
+        # Extract args
         data = request.json
         user_id = data.get('user_id')
         contact_name = data.get('contact_name')
         username = data.get('username')
-        print(username)
-
         with db.cursor() as cursor:
-             # Execute sql - delete contact row - and return results
+            # Execute sql - delete contact row - and return results
             sql = '''DELETE FROM User_Contact
             USING User_Contact
             JOIN Contacts ON User_Contact.contact_id = Contacts.contact_id
             WHERE User_Contact.user_id = %s
             AND Contacts.contact_name = %s
             AND User_Contact.username = %s'''
-            cursor.execute(sql, (user_id, contact_name, username)) # NOTE: CHANGE THIS LATER
+            cursor.execute(sql, (user_id, contact_name, username))
             db.commit()
             return jsonify({"success": True})
     except Exception as e:
         print('Error:', e)
         return jsonify({'error': str(e)})
-    
+
+# GET CONTACTS - Profile
+@app.route('/api/profile/getcontacts', methods=['GET'])
+def get_contacts():
+    try:
+        # Extract args
+        with db.cursor(dictionary=True) as cursor:
+            user_id = request.args.get('user_id')
+
+            # Execute sql - delete contact row - and return results
+            sql = '''SELECT Contacts.contact_name, User_Contact.username
+            FROM User_Contact
+            JOIN Contacts ON User_Contact.contact_id = Contacts.contact_id
+            WHERE User_Contact.user_id = %s'''
+            cursor.execute(sql, (user_id,))
+            results = cursor.fetchall()
+
+            # Retrieve contents and return success
+            return jsonify(results)
+    except Exception as e:
+        print('Error:', e)
+        return jsonify({'error': str(e)})
 
     
 if __name__ == "__main__":

@@ -22,7 +22,6 @@ export default function Profile() {
 
   /* ============================ HANDLERS: EDIT PROFILE ============================ */
   const updateProfile = async () => {
-
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/editprofile', {
         user_id: userId,
@@ -53,26 +52,17 @@ export default function Profile() {
 
   // Edit Contacts - Add Contact button handler - Adds contact to list and clear output
   const addToContacts = async () => {
-
     if (dropdownOption.trim() !== "" && username.trim() !== "") {
       try {
         const response = await Axios.post('http://localhost:5000/api/profile/addcontact', {
           user_id: userId,
           contact_name: dropdownOption,
-          username: username,
+          username: username
         });
         if (response.data.success) {
           setContactMsg('Add successful.');
-          // Update contacts and clear the feed
-          const newContact = {
-            platform: dropdownOption,
-            contactInfo: username,
-          };
-          setuserContacts([...userContacts, newContact]);
-          setDropdownOption(""); 
-          setUsername(""); 
         } else {
-          setContactMsg('Invalid Contact Parameters.');
+          setContactMsg('Add unsuccesssful. Invalid Contact Parameters.');
         }
       } catch (error) {
         console.error(error);
@@ -86,18 +76,14 @@ export default function Profile() {
   
   // Edit Contacts - Remove Contact button handler
   const removeContact = async () => {
-
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/removecontact', {
         user_id: userId,
         contact_name: dropdownOption,
-        username: username,
+        username: username
       });
       if (response.data.success) {
         setContactMsg('Delete successful.');
-        setuserContacts(userContacts.filter(
-          userContact => userContact.platform !== dropdownOption && userContact.contactInfo !== username)
-        );
       } else {
         setContactMsg('Invalid Contact Parameters.');
       }
@@ -106,6 +92,27 @@ export default function Profile() {
       setContactMsg('Error while deleting contact. Try Again.');
     } 
   };
+
+  // Edit Contacts - Get Contacts from user
+  const fetchContacts = async () => {
+    try {
+      const response = await Axios.get('http://localhost:5000/api/profile/getcontacts', {
+        params: {user_id: userId}
+      });
+
+      // Validate response data
+      if (Array.isArray(response.data)) {
+        setuserContacts(response.data); // Update contacts state with the API response
+      } else {
+        console.error("API returned non-array response:", response.data);
+        setuserContacts([]); // Set groups empty if the response is invalid
+      }
+
+    } catch (error) {
+      console.error(error);
+      setContactMsg('Error while retrieving contacts. Try Again.');
+    } 
+  }
 
   return (
     <div className = "homepage" >
@@ -196,7 +203,11 @@ export default function Profile() {
 
         <button onClick={removeContact}>
           Remove 
-        </button>
+        </button>{" "}
+
+        <button onClick={fetchContacts}>
+          Show Contacts 
+        </button><br/>
         <p>{contactMsg}</p>
         <div><br/><br/></div>
       
@@ -206,7 +217,7 @@ export default function Profile() {
         <ul>
           {userContacts.map((contact, index) => (
             <li key={index}>
-              <h3>{contact.platform}: {contact.contactInfo}</h3>
+              <h3>{contact.contact_name}: {contact.username}</h3>
             </li>
           ))}
         </ul>
