@@ -6,6 +6,15 @@ import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Navbar from "./components/Navbar";
 import MyGroups from './pages/MyGroups';
+import { UserProvider } from './context/UserContext';
+import ReactDOM from 'react-dom';
+
+ReactDOM.render(
+  <UserProvider>
+      <App />
+  </UserProvider>,
+  document.getElementById('root')
+);
 
 const App = () => {
   return (
