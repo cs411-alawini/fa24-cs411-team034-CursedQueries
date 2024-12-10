@@ -1,16 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import '../App.css'; 
 import Axios from 'axios'
 import { useUserContext } from '../context/UserContext'; 
 
 const Homepage = () => {
-  const { user, setUser } = useUserContext(); 
-
+  const { user, setUser } = useUserContext();
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
-
 
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
