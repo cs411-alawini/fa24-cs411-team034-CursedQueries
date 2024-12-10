@@ -25,10 +25,14 @@ const Homepage = () => {
       });
 
       if (response.data.success) {
-        setUser(response.data.user); // Set global user context
+        // Set user context with user_id and email
+        setUser({
+          user_id: response.data.user_id,
+          email: response.data.email,
+        });
         setLoginMessage('Login successful!');
       } else {
-        setLoginMessage('Invalid email or password.');
+        setLoginMessage(response.data.message || 'Invalid email or password.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -60,6 +64,7 @@ const Homepage = () => {
       {user ? (
         <div>
           <h1>Welcome, {user.email}!</h1>
+          <p>Your User ID: {user.user_id}</p>
           <p>You are logged in.</p>
         </div>
       ) : (
