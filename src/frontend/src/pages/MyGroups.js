@@ -43,14 +43,18 @@ const MyGroups = () => {
             setMessage('Group ID cannot be empty.');
             return;
           }
-    
-          const response = await Axios.post('http://localhost:5000/api/groups', {
+
+          const newGroup = {
             group_id: createId,
             manager_id: user_id,
-          });
+          };
     
+          const response = await Axios.post('http://localhost:5000/api/groups', {newGroup});
+          
           if (response.data.success) {
             setMessage('Group created successfully.');
+            setUserGroups([...userGroups, newGroup])
+            setManageGroups([...manageGroups, newGroup])
             fetchGroups();
           } else {
             setMessage(response.data.message || 'Error creating group.');
