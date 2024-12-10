@@ -1,6 +1,6 @@
 import './App.css'; 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { UserProvider } from './context/UserContext'; // Import UserProvider
+import { UserProvider } from './context/UserContext';
 
 import Homepage from "./pages/Homepage";
 import Profile from "./pages/Profile";
