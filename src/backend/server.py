@@ -11,7 +11,7 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="group034", 
+  password="team034", 
   database="StudyGroup"
 )
 
@@ -78,23 +78,27 @@ def test_db_connection():
 # SEARCH
 # ==========================================================================================
 
-@app.route('/api/search', methods=['POST'])
+@app.route('/api/search', methods=['GET'])
 def search_groups():
    try:
        # Extract the user ID from the Authorization header
-       auth_header = request.headers.get('Authorization')
-       if not auth_header or not auth_header.startswith('Bearer '):
-           return jsonify({"success": False, "message": "Missing or invalid user ID."}), 401
+    #    auth_header = request.headers.get('Authorization')
+    #    if not auth_header or not auth_header.startswith('Bearer '):
+    #        return jsonify({"success": False, "message": "Missing or invalid user ID."}), 401
 
-
-       user_id = auth_header.split(' ')[1]
-
+    #    user_id = auth_header.split(' ')[1]
+       user_id = "1"
 
        # Extract search parameters from the request body
        data = request.json
+       print("Data received from frontend:", data)
+
        department = data.get('department')
        course_code = data.get('course_code')
 
+       print("Received parameters:")
+       print(f"Department: {department}")
+       print(f"Course Code: {course_code}")
 
        with db.cursor(dictionary=True) as cursor:
            sql = '''
@@ -112,7 +116,6 @@ def search_groups():
            '''
            cursor.execute(sql, (user_id, department, department, course_code, course_code))
            groups = cursor.fetchall()
-
 
        return jsonify({"success": True, "groups": groups})
    except Exception as e:

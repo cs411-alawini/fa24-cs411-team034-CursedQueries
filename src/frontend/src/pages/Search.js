@@ -19,35 +19,39 @@ const Search = () => {
 
  // Fetch groups from the backend
  const fetchGroups = async () => {
-   setLoading(true);
-   try {
-     const params = {
-       department: department || null, // Send null if empty
-       course_code: courseCode || null, // Send null if empty
-       meeting_times: selectedTimes.length > 0 ? selectedTimes : null,
-       user_id: userId, // Send the logged-in user's ID
-     };
+  setLoading(true);
+  try {
+    const params = new URLSearchParams();
+    if (department) params.append("department", department);
+    if (courseCode) params.append("course_code", courseCode);
+    if (selectedTimes.length > 0) params.append("meeting_times", selectedTimes.join(","));
+    
+    const response = await Axios.get(
+      `http://localhost:5000/api/search?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userId}`,
+        },
+      }
+    );
 
+    console.log("Backend Response:", response.data);
 
-     const response = await Axios.get("http://localhost:5000/api/search/groups", { params });
-
-
-     if (response.data.success) {
-       setGroups(response.data.groups || []);
-       setError("");
-     } else {
-       setGroups([]);
-       setError(response.data.message || "Error fetching groups.");
-     }
-   } catch (err) {
-     console.error("Error fetching groups:", err);
-     setError("Error fetching groups. Please try again.");
-     setGroups([]);
-   } finally {
-     setLoading(false);
-   }
- };
-
+    if (response.data.success) {
+      setGroups(response.data.groups || []);
+      setError("");
+    } else {
+      setGroups([]);
+      setError(response.data.message || "Error fetching groups.");
+    }
+  } catch (err) {
+    console.error("Error fetching groups:", err);
+    setError("Error fetching groups. Please try again.");
+    setGroups([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
  // Toggle the time slots in the time widget
  const toggleTimeSlot = (day, timeSlot) => {
@@ -59,7 +63,6 @@ const Search = () => {
    );
  };
 
-
  // Clear all filters
  const clearFilters = () => {
    setDepartment("");
@@ -68,7 +71,6 @@ const Search = () => {
    setGroups([]);
  };
 
-
  // Join a study group
  const handleJoinGroup = async (groupId) => {
    if (!userId) {
@@ -76,12 +78,10 @@ const Search = () => {
      return;
    }
 
-
    try {
      const response = await Axios.post(`http://localhost:5000/api/groups/${groupId}/join`, {
        user_id: userId,
      });
-
 
      if (response.data.success) {
        alert("Successfully joined the group.");
@@ -95,12 +95,10 @@ const Search = () => {
    }
  };
 
-
  return (
    <div className="search-page">
      <h1>Search Study Groups</h1>
      <p>Find the perfect study group by filtering below:</p>
-
 
      <div className="search-bar">
        <input
@@ -120,7 +118,6 @@ const Search = () => {
        <button onClick={clearFilters}>Clear Filters</button>
      </div>
 
-
      {isWidgetOpen && (
        <TimeWidget
          toggleTimeSlot={toggleTimeSlot}
@@ -129,7 +126,6 @@ const Search = () => {
          selectedTimes={selectedTimes}
        />
      )}
-
 
      <div className="group-results">
        {loading && <p>Loading...</p>}
@@ -151,6 +147,5 @@ const Search = () => {
    </div>
  );
 };
-
 
 export default Search;
