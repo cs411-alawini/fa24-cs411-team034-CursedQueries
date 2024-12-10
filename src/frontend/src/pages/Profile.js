@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import '../App.css'; 
 import Axios from 'axios'
+import { useUserContext } from '../context/UserContext'; 
 
 export default function Profile() {
   // States - EDIT PROFILE
-  const [userId] = useState('1');
+  // const [userId] = useState('1');
+  const { user, setUser } = useUserContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [studyPreference, setStudyPreference] = useState('');
@@ -24,7 +26,7 @@ export default function Profile() {
   const updateProfile = async () => {
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/editprofile', {
-        user_id: userId,
+        user_id: user.user_id,
         email: email,
         password: password,
         study_pref: studyPreference
@@ -55,7 +57,7 @@ export default function Profile() {
     if (dropdownOption.trim() !== "" && username.trim() !== "") {
       try {
         const response = await Axios.post('http://localhost:5000/api/profile/addcontact', {
-          user_id: userId,
+          user_id: user.user_id,
           contact_name: dropdownOption,
           username: username
         });
@@ -78,7 +80,7 @@ export default function Profile() {
   const removeContact = async () => {
     try {
       const response = await Axios.post('http://localhost:5000/api/profile/removecontact', {
-        user_id: userId,
+        user_id: user.user_id,
         contact_name: dropdownOption,
         username: username
       });
@@ -97,7 +99,7 @@ export default function Profile() {
   const fetchContacts = async () => {
     try {
       const response = await Axios.get('http://localhost:5000/api/profile/getcontacts', {
-        params: {user_id: userId}
+        params: {user_id: user.user_id}
       });
 
       // Validate response data

@@ -14,8 +14,8 @@ const Search = () => {
  const [selectedTimes, setSelectedTimes] = useState([]);
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState("");
- const { userId } = useUserContext(); // To get user ID from context
-
+//  const { userId } = useUserContext(); // To get user ID from context
+ const { user, setUser } = useUserContext();
 
  // Fetch groups from the backend
  const fetchGroups = async () => {
@@ -30,7 +30,7 @@ const Search = () => {
       `http://localhost:5000/api/search?${params.toString()}`,
       {
         headers: {
-          Authorization: `Bearer ${userId}`,
+          Authorization: `Bearer ${user.user_id}`,
         },
       }
     );
@@ -73,14 +73,14 @@ const Search = () => {
 
  // Join a study group
  const handleJoinGroup = async (groupId) => {
-   if (!userId) {
+   if (!user.user_id) {
      alert("You must be logged in to join a group.");
      return;
    }
 
    try {
      const response = await Axios.post(`http://localhost:5000/api/groups/${groupId}/join`, {
-       user_id: userId,
+       user_id: user.user_id,
      });
 
      if (response.data.success) {

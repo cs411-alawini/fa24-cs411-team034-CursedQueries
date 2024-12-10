@@ -170,7 +170,7 @@ def login():
                 return jsonify({
                     "success": True,
                     "message": "Login successful!",
-                    "user_id": user['id'],
+                    "user_id": user['user_id'],
                     "email": user['email'] 
                 })
             else:
