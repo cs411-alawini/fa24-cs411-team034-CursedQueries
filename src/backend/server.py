@@ -11,7 +11,7 @@ CORS(app, resources={r'/api/*': {"origins": "http://localhost:3000"}})
 db = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="team034", 
+  password="group034", 
   database="StudyGroup"
 )
 
@@ -90,17 +90,22 @@ def search_groups():
        user_id = "1"
 
        # Extract search parameters from the request body
-       data = request.json
-       print("Data received from frontend:", data)
+    #    data = request.json
+    #    print("Data received from frontend:", data)
 
-       department = data.get('department')
-       course_code = data.get('course_code')
+    #    department = data.get('department')
+    #    course_code = data.get('course_code')
 
-       print("Received parameters:")
-       print(f"Department: {department}")
-       print(f"Course Code: {course_code}")
-
+       
        with db.cursor(dictionary=True) as cursor:
+           department = request.args.get('department')
+           course_code = request.args.get('course_code')
+
+           print("Received parameters:")
+           print(f"Department: {department}")
+           print(f"Course Code: {course_code}")
+
+
            sql = '''
                SELECT g.group_id, g.group_name, g.study_type, c.course_code, c.department,
                       c.course_name, COUNT(m.user_id) as groupSize,
