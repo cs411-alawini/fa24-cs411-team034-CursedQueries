@@ -6,13 +6,12 @@ const user_id = "id123"
 
 const MyGroups = () => {
 
-    const [groups, setGroups] = useState([]);
     const [userGroups, setUserGroups] = useState([]);
     const [manageGroups, setManageGroups] = useState([]);
     const [createId, setCreateId] = useState([]);
     const [deleteId, setDeleteId] = useState([]);
     const [quitId, setQuitId] = useState([]);
-    const [message, setMessage] = useState("")
+    const [setMessage] = useState("")
 
     useEffect(() => {
         fetchGroups();
@@ -49,7 +48,11 @@ const MyGroups = () => {
             manager_id: user_id,
           };
     
-          const response = await Axios.post('http://localhost:5000/api/groups', {newGroup});
+          const response = await Axios.post('http://localhost:5000/api/groups', {
+            group_id: createId,
+            manager_id: user_id,
+        });
+        
           
           if (response.data.success) {
             setMessage('Group created successfully.');
