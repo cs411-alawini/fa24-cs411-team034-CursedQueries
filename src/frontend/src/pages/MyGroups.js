@@ -133,7 +133,7 @@ const MyGroups = () => {
             value={deleteId}
             onChange={handleDeleteChange}>
                 <option value = "" disabled>Select an Option</option>
-                {manageGroups.map((group) => <option value = {group.group_id}>{group.group_id}</option>)}
+                {/* {manageGroups.map((group) => <option value = {group.group_id}>{group.group_id}</option>)} */}
             </select>
             
             <button onClick={deleteGroup}>
@@ -147,7 +147,7 @@ const MyGroups = () => {
             value={quitId}
             onChange={handleQuitChange}>
                 <option value = "" disabled>Select an Option</option>
-                {userGroups.map((group) => <option value = {group.group_id}>{group.group_id}</option>)}
+                {/* {userGroups.map((group) => <option value = {group.group_id}>{group.group_id}</option>)} */}
             </select>
             <button onClick={quitGroup}>
                 Quit Group
